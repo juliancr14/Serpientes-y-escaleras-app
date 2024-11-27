@@ -1,4 +1,4 @@
-package com.serpientesescaleras.app
+package com.carsot.serpientes_y_escaleras_app
 
 import android.content.Intent
 import android.os.Bundle
