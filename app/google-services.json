@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "653972082216",
+    "project_id": "serpientes-y-escaleras-app",
+    "storage_bucket": "serpientes-y-escaleras-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:653972082216:android:0350c964ec6bfa64a2ef1d",
+        "android_client_info": {
+          "package_name": "com.carsot.serpientes_y_escaleras_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkQa7fjNqfxeLnmL4SujlAus7wiyIklnU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
