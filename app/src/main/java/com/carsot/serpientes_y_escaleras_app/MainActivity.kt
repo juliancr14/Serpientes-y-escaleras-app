@@ -1,47 +1,32 @@
 package com.carsot.serpientes_y_escaleras_app
 
+import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.carsot.serpientes_y_escaleras_app.ui.theme.SerpientesyescalerasappTheme
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            SerpientesyescalerasappTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+        setContentView(R.layout.activity_main)
+        var txtName1 = findViewById<TextView>(R.id.etxtPplayer)
+        var txtName2 = findViewById<TextView>(R.id.etxtSplayer)
+
+        val btn: Button = findViewById(R.id.btnStart)
+        btn.setOnClickListener {
+            val name1 = txtName1.text.toString()
+            val name2 = txtName2.text.toString()
+
+
+            val intent: Intent = Intent(this, BoardActivity::class.java)
+            intent.putExtra("Nombre1",name1)
+            intent.putExtra("Nombre2",name2)
+            startActivity(intent)
         }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    SerpientesyescalerasappTheme {
-        Greeting("Android")
-    }
 }

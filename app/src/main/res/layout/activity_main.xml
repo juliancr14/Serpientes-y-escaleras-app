@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/mainbackground"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="1dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/txtTituloMain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/titulo" />
+
+        <TextView
+            android:id="@+id/txtPplayer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/moresugar"
+            android:text="@string/txtPjugador"
+            android:textAlignment="center"
+            android:textColor="@color/golden"
+            android:textSize="28sp" />
+
+        <EditText
+            android:id="@+id/etxtPplayer"
+            android:layout_width="match_parent"
+            android:layout_height="67dp"
+            android:background="@drawable/ingreso"
+            android:ems="10"
+            android:fontFamily="@font/moresugar"
+            android:inputType="text"
+            android:text="Nombre"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="28sp" />
+
+        <TextView
+            android:id="@+id/txtSplayer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/moresugar"
+            android:text="@string/txtSjugador"
+            android:textAlignment="center"
+            android:textColor="@color/golden"
+            android:textSize="28sp" />
+
+        <EditText
+            android:id="@+id/etxtSplayer"
+            android:layout_width="match_parent"
+            android:layout_height="67dp"
+            android:background="@drawable/ingreso"
+            android:ems="10"
+            android:fontFamily="@font/moresugar"
+            android:inputType="text"
+            android:text="Nombre"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="28sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="123dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnInfo"
+                android:layout_width="69dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10sp"
+                android:layout_marginTop="40sp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/peach"
+                android:fontFamily="monospace"
+                android:text="i"
+                android:textSize="41sp" />
+
+            <Button
+                android:id="@+id/btnStart"
+                android:layout_width="290dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10sp"
+                android:layout_marginTop="40sp"
+                android:layout_marginRight="10sp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/peach"
+                android:fontFamily="sans-serif-black"
+                android:text="START"
+                android:textSize="35sp" />
+
+        </LinearLayout>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
