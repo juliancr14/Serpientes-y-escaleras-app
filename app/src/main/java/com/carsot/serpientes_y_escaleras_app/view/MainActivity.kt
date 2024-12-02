@@ -1,11 +1,11 @@
-package com.carsot.serpientes_y_escaleras_app
+package com.carsot.serpientes_y_escaleras_app.view
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
-import android.widget.EditText
 import android.widget.TextView
+import com.carsot.serpientes_y_escaleras_app.R
 
 class MainActivity : AppCompatActivity() {
 
