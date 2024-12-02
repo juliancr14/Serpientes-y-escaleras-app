@@ -1,6 +1,9 @@
 package com.carsot.serpientes_y_escaleras_app.viewmodel
 
+import android.content.Context
+import android.speech.tts.TextToSpeech
 import android.widget.TextView
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -25,6 +28,8 @@ class GameViewModel : ViewModel() {
     private val _ganador = MutableLiveData<String?>()
     val ganador: LiveData<String?> get() = _ganador
 
+    private lateinit var mTTS: TextToSpeech
+
     init {
         _mapa.value = mutableListOf()
         _jugadores.value = mutableListOf(
@@ -34,7 +39,8 @@ class GameViewModel : ViewModel() {
         actualizarTurno()
     }
 
-    fun inicializarJuego(casillas: List<Pair<Int, TextView>>) {
+    fun inicializarJuego(casillas: List<Pair<Int, TextView>>, tts: TextToSpeech) {
+        mTTS = tts
         val mapaInicial = casillas.map { (numero, textView) ->
             when (numero) {
                 2 -> Casilla(numero, TipoCasilla.ESCALERA, 17, textView)
@@ -61,79 +67,104 @@ class GameViewModel : ViewModel() {
         _turno.value = "Turno: ${jugadorActual?.nombre?.toUpperCase()}"
     }
 
-    fun tirarDados() {
+    fun tirarDados(context: Context) {
         val resultado = Random.nextInt(6) + 1
         val resultado2 = Random.nextInt(6) + 1
         _dados.value = Pair(resultado, resultado2)
-        procesarMovimiento(resultado, resultado2)
+        procesarMovimiento(context, resultado, resultado2)
     }
 
-    private fun procesarMovimiento(resultado: Int, resultado2: Int) {
+    private fun procesarMovimiento(context: Context, resultado: Int, resultado2: Int) {
         val jugadores = _jugadores.value ?: return
         val mapa = _mapa.value ?: return
-        var jugadorActual = jugadores.firstOrNull { it.turno } ?: return
+        val jugadorActual = jugadores.firstOrNull { it.turno } ?: return
         val jugadorOponente = jugadores.firstOrNull { !it.turno } ?: return
 
         val posAnterior = jugadorActual.Posicion
         jugadorActual.Posicion += resultado + resultado2
 
-        // Check if player position exceeds the board limits
         if (jugadorActual.Posicion > 64) {
             jugadorActual.Posicion = posAnterior
             return
         }
 
-        // Handle rolling six three times
+        actualizarCasilla(mapa.firstOrNull { it.Numero == posAnterior }, jugadorActual, jugadorOponente)
+
         if (jugadorActual.contDado == 3) {
-            jugadorActual.Posicion = 1
-            jugadorActual.contDado = 0
-        } else {
-            // Check if new position is a snake or ladder
-            val nuevaCasilla = mapa.firstOrNull { it.Numero == jugadorActual.Posicion }
-            if (nuevaCasilla != null) {
-                jugadorActual.Posicion = nuevaCasilla.destino.takeIf { nuevaCasilla.Tipo != TipoCasilla.NORMAL } ?: jugadorActual.Posicion
-
-                // Update TextView for the new position
-                nuevaCasilla.lugar.text = "${jugadorActual.Posicion}.XO"
-            }
-        }
-
-        // Update TextView for the previous position
-        val casillaAnterior = mapa.firstOrNull { it.Numero == posAnterior }
-        if (casillaAnterior != null) {
-            casillaAnterior.lugar.text = when (casillaAnterior.lugar.text) {
-                "$posAnterior.XO" -> "$posAnterior.O"
-                else -> "$posAnterior. "
-            }
-        }
-
-        // Check for win condition
-        if (jugadorActual.Posicion == 64) {
-            _ganador.value = jugadorActual.nombre
-            jugadores.forEach { it.turno = false }
+            resetPosicionJugador(context, jugadorActual, jugadorOponente)
             return
         }
 
-        // Handle turn changes
+        val nuevaCasilla = mapa.firstOrNull { it.Numero == jugadorActual.Posicion }
+        if (nuevaCasilla != null) {
+            jugadorActual.Posicion = nuevaCasilla.destino.takeIf { nuevaCasilla.Tipo != TipoCasilla.NORMAL } ?: jugadorActual.Posicion
+        }
+
+        // Verificar condición de ganar
+        if (jugadorActual.Posicion == 64) {
+            _ganador.value = jugadorActual.nombre
+            jugadores.forEach { it.turno = false }
+            actualizarCasilla(mapa.firstOrNull { it.Numero == jugadorActual.Posicion }, jugadorActual, jugadorOponente)
+            return
+        }
+
+        actualizarCasilla(mapa.firstOrNull { it.Numero == jugadorActual.Posicion }, jugadorActual, jugadorOponente)
+
         val suma = resultado + resultado2
         if (suma == 6) {
             jugadorActual.turno = true
             jugadorOponente.turno = false
             jugadorActual.contDado += 1
+            showToast(context, "Vamos tus dados suman 6, Tienes otro intento!!")
         } else {
             jugadorActual.turno = false
             jugadorOponente.turno = true
             jugadorActual.contDado = 0
         }
 
-        _jugadores.value = jugadores // Trigger observers
-        actualizarTurno() // Update turn display
+        _jugadores.value = jugadores
+        actualizarTurno()
     }
 
-    fun cambiarTurno() {
-        _jugadores.value?.let { jugadores ->
-            jugadores.forEach { it.turno = !it.turno }
-            actualizarTurno()
+    private fun resetPosicionJugador(context: Context, jugador: Jugador, jugadorOponente: Jugador) {
+        showToast(context, "Lo siento, ya sacaste tres veces seis con ambos dados!!")
+
+        val mapa = _mapa.value ?: return
+
+        for (casilla in mapa) {
+            if (casilla.Numero == jugador.Posicion) {
+                if (casilla.lugar.text.toString() == "${jugador.Posicion}.XO") {
+                    casilla.lugar.text = "${jugador.Posicion}.O"
+                } else if (casilla.lugar.text.toString() == "${jugador.Posicion}.X ") {
+                    casilla.lugar.text = "${jugador.Posicion}.  "
+                }
+            }
+
+            jugador.Posicion = 1
+            if (casilla.lugar.text.toString() == "1.O") {
+                casilla.lugar.text = "1.XO"
+            } else if (casilla.lugar.text.toString() == "1.  ") {
+                casilla.lugar.text = "1.X "
+            }
         }
+
+        _mapa.value = mapa // Asegurarse de que el mapa actualizado se notifique
     }
+
+    private fun showToast(context: Context, message: String) {
+        val toast = Toast.makeText(context, message, Toast.LENGTH_LONG)
+        toast.show()
+    }
+
+    private fun actualizarCasilla(casilla: Casilla?, jugadorActual: Jugador, jugadorOponente: Jugador) {
+        casilla?.lugar?.text = when {
+            casilla?.Numero == jugadorActual.Posicion && casilla?.Numero == jugadorOponente.Posicion -> "${casilla.Numero}.XO"
+            casilla?.Numero == jugadorActual.Posicion -> "${casilla.Numero}.X"
+            casilla?.Numero == jugadorOponente.Posicion -> "${casilla.Numero}.O"
+            else -> "${casilla?.Numero}. "
+        }
+        val textoParaLeer = "Casilla ${casilla?.Numero}"
+        mTTS.speak(textoParaLeer, TextToSpeech.QUEUE_FLUSH, null, null)
+    }
+
 }

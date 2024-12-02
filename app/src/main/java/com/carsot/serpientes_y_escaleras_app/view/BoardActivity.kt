@@ -110,7 +110,7 @@ class BoardActivity : AppCompatActivity() {
             Pair(63, findViewById<TextView>(R.id.casilla63)),
             Pair(64, findViewById<TextView>(R.id.casilla64))
         )
-        viewModel.inicializarJuego(casillas)
+        viewModel.inicializarJuego(casillas, mTTS)
 
         // Observar los cambios en el turno, los dados y el ganador
         viewModel.turno.observe(this) { turno ->
@@ -131,14 +131,14 @@ class BoardActivity : AppCompatActivity() {
         // Configurar el botón de retorno
         val btn: ImageButton = findViewById(R.id.btnReturn)
         btn.setOnClickListener {
-            val intent: Intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
 
         // Configurar el botón para tirar los dados
         val btn2: Button = findViewById(R.id.botonDado)
         btn2.setOnClickListener {
-            viewModel.tirarDados()
+            viewModel.tirarDados(this)
         }
     }
 }
