@@ -8,6 +8,9 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.carsot.serpientes_y_escaleras_app.model.Casilla
+import com.carsot.serpientes_y_escaleras_app.model.Jugador
+import com.carsot.serpientes_y_escaleras_app.model.TipoCasilla
 import java.util.Locale
 import kotlin.random.Random
 
