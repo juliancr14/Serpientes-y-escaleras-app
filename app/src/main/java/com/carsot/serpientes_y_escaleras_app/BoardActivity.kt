@@ -19,10 +19,10 @@ class BoardActivity : AppCompatActivity(){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_board)
 
-        var txtJname = findViewById<TextView>(R.id.txtTurno)
+        val txtJname = findViewById<TextView>(R.id.txtTurno)
         val TV1 = findViewById<TextView>(R.id.dado)
         val TV2 = findViewById<TextView>(R.id.dadodos)
-        var textoGanador: TextView = findViewById<TextView>(R.id.txtGanador)
+        val textoGanador: TextView = findViewById<TextView>(R.id.txtGanador)
 
         val name1: String? = intent.getStringExtra("Nombre1")
         val name2: String? = intent.getStringExtra("Nombre2")
