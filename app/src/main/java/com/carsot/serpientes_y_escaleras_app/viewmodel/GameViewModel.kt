@@ -33,8 +33,8 @@ class GameViewModel : ViewModel() {
     init {
         _mapa.value = mutableListOf()
         _jugadores.value = mutableListOf(
-            Jugador(1, "Jugador 1", true, 1, 0),
-            Jugador(2, "Jugador 2", false, 1, 0)
+            Jugador(1, "Jugador 1", true, 1, 0, "X"),  // Asignar "X" al primer jugador
+            Jugador(2, "Jugador 2", false, 1, 0, "O") // Asignar "O" al segundo jugador
         )
         actualizarTurno()
     }
@@ -78,90 +78,6 @@ class GameViewModel : ViewModel() {
 
         // Procesar movimiento
         procesarMovimiento(context, resultado, resultado2, textoGanador)
-    }
-
-    private fun procesarMovimiento(context: Context, resultado: Int, resultado2: Int, textoGanador: TextView) {
-        val jugadores = _jugadores.value ?: return
-        val mapa = _mapa.value ?: return
-        val jugadorActual = jugadores.firstOrNull { it.turno } ?: return
-        val jugadorOponente = jugadores.firstOrNull { !it.turno } ?: return
-
-        if (jugadorActual.contDado == 3) {
-            resetPosicionJugador(context, jugadorActual)
-            return
-        }
-
-        var posAnterior = jugadorActual.Posicion
-        jugadorActual.Posicion += resultado + resultado2
-
-        if (jugadorActual.Posicion > 64) {
-            showToast(context, "Lo siento, no fue suficiente para llegar a la meta!!")
-            jugadorActual.Posicion = posAnterior
-        } else {
-            for (casilla in mapa) {
-                if (casilla.Numero == posAnterior) {
-                    if (casilla.lugar?.text.toString() == "$posAnterior.XO") {
-                        casilla.lugar?.text = "$posAnterior.O"
-                    } else {
-                        casilla.lugar?.text = "$posAnterior.  "
-                    }
-                }
-
-                if (casilla.Numero == jugadorActual.Posicion) {
-                    when (casilla.Tipo) {
-                        TipoCasilla.ESCALERA -> {
-                            posAnterior = jugadorActual.Posicion
-                            jugadorActual.Posicion = casilla.destino
-                        }
-                        TipoCasilla.SERPIENTE -> {
-                            posAnterior = jugadorActual.Posicion
-                            jugadorActual.Posicion = casilla.destino
-                        }
-                        TipoCasilla.GANADOR -> {
-                            if (casilla.lugar?.text.toString() == "${jugadorActual.Posicion}.X ") {
-                                casilla.lugar?.text = "${jugadorActual.Posicion}.XO"
-                                val textoParaLeer = "${jugadorActual.Posicion} Congratulations, you win!"
-                                mTTS.speak(textoParaLeer, TextToSpeech.QUEUE_FLUSH, null, null)
-                            } else {
-                                casilla.lugar?.text = "${jugadorActual.Posicion}.O "
-                                val textoParaLeer = "${jugadorActual.Posicion} Congratulations, you win!"
-                                mTTS.speak(textoParaLeer, TextToSpeech.QUEUE_FLUSH, null, null)
-                            }
-                            textoGanador.text = "${textoGanador.text}\n${jugadorActual.nombre}"
-                            jugadorActual.turno = false
-                            jugadorOponente.turno = false
-                            _ganador.value = jugadorActual.nombre
-                            return
-                        }
-                        else -> {
-                            if (casilla.lugar?.text.toString() == "${jugadorActual.Posicion}.O") {
-                                casilla.lugar?.text = "${jugadorActual.Posicion}.XO"
-                            } else {
-                                casilla.lugar?.text = "${jugadorActual.Posicion}.X "
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        actualizarCasilla(mapa.firstOrNull { it?.Numero == jugadorActual.Posicion }, jugadorActual, jugadores.firstOrNull { it.id != jugadorActual.id })
-
-        // Cambio de turno
-        val suma = resultado + resultado2
-        if (suma == 6) {
-            jugadorActual.turno = true
-            jugadorOponente.turno = false
-            jugadorActual.contDado += 1
-            showToast(context, "Vamos tus dados suman 6, ¡Tienes otro intento!")
-        } else {
-            jugadorActual.turno = false
-            jugadorOponente.turno = true
-            jugadorActual.contDado = 0
-        }
-
-        _jugadores.value = jugadores
-        actualizarTurno()
     }
 
     private fun resetPosicionJugador(context: Context, jugador: Jugador) {
@@ -212,17 +128,81 @@ class GameViewModel : ViewModel() {
         toast.show()
     }
 
+    private fun procesarMovimiento(context: Context, resultado: Int, resultado2: Int, textoGanador: TextView) {
+        val jugadores = _jugadores.value ?: return
+        val mapa = _mapa.value ?: return
+        val jugadorActual = jugadores.firstOrNull { it.turno } ?: return
+        val jugadorOponente = jugadores.firstOrNull { !it.turno } ?: return
+
+        val posAnterior = jugadorActual.Posicion
+        jugadorActual.Posicion += resultado + resultado2
+
+        // Verificar si el jugador ha excedido la meta
+        if (jugadorActual.Posicion > 64) {
+            showToast(context, "Lo siento, no fue suficiente para llegar a la meta!")
+            jugadorActual.Posicion = posAnterior
+            return
+        }
+
+        // Limpiar la casilla anterior
+        val casillaAnterior = mapa.firstOrNull { it?.Numero == posAnterior }
+        casillaAnterior?.lugar?.text = "${casillaAnterior?.Numero}.  " // Limpiar correctamente la casilla anterior
+
+        // Verificar la nueva casilla
+        val nuevaCasilla = mapa.firstOrNull { it?.Numero == jugadorActual.Posicion }
+        nuevaCasilla?.let { casilla ->
+            when (casilla.Tipo) {
+                TipoCasilla.ESCALERA -> jugadorActual.Posicion = casilla.destino
+                TipoCasilla.SERPIENTE -> jugadorActual.Posicion = casilla.destino
+                TipoCasilla.GANADOR -> {
+                    textoGanador.text = "${textoGanador.text}\n${jugadorActual.nombre}"
+                    _ganador.value = jugadorActual.nombre
+                    showToast(context, "¡Felicidades ${jugadorActual.nombre}, has ganado!")
+                    return
+                }
+                else -> Unit
+            }
+        }
+
+        // Actualizar las casillas con el símbolo del jugador
+        actualizarCasilla(nuevaCasilla, jugadorActual, jugadorOponente)
+
+        // Cambio de turno
+        if ((resultado + resultado2) == 6) {
+            jugadorActual.turno = true
+            showToast(context, "¡Sacaste un 6, tienes otro turno!")
+        } else {
+            jugadorActual.turno = false
+            jugadorOponente.turno = true
+        }
+
+        _jugadores.value = jugadores
+        actualizarTurno()
+    }
+
     private fun actualizarCasilla(casilla: Casilla?, jugadorActual: Jugador, jugadorOponente: Jugador?) {
         if (casilla == null) return // Verificar nulabilidad de `casilla`
 
+        // Actualizar las casillas con los símbolos de ambos jugadores
         casilla.lugar?.text = when {
-            casilla.Numero == jugadorActual.Posicion && casilla.Numero == jugadorOponente?.Posicion -> "${casilla.Numero}.XO"
-            casilla.Numero == jugadorActual.Posicion -> "${casilla.Numero}.X"
-            casilla.Numero == jugadorOponente?.Posicion -> "${casilla.Numero}.O"
+            // Si el jugador actual está en la casilla, se muestra su símbolo
+            casilla.Numero == jugadorActual.Posicion -> "${casilla.Numero}.${jugadorActual.simbolo}"
+
+            // Si el oponente está en la casilla, se muestra su símbolo
+            casilla.Numero == jugadorOponente?.Posicion -> "${casilla.Numero}.${jugadorOponente.simbolo}"
+
+            // Si la casilla está vacía, solo muestra el número de la casilla
             else -> "${casilla.Numero}. "
         }
 
+        // Verifica si ambas casillas ocupadas por jugadores "X" y "O" están en la misma posición
+        if (casilla.Numero == jugadorActual.Posicion && casilla.Numero == jugadorOponente?.Posicion) {
+            casilla.lugar?.text = "${casilla.Numero}.XO"  // Mostrar "XO" si ambos jugadores están en la misma casilla
+        }
+
+        // Usar TextToSpeech para leer el número de la casilla si es necesario
         val textoParaLeer = "Casilla ${casilla.Numero}"
         mTTS.speak(textoParaLeer, TextToSpeech.QUEUE_FLUSH, null, null)
     }
+
 }
