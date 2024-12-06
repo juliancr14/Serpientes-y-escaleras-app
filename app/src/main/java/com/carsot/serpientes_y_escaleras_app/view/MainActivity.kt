@@ -20,13 +20,11 @@ class MainActivity : AppCompatActivity() {
             val name1 = txtName1.text.toString()
             val name2 = txtName2.text.toString()
 
-
             val intent: Intent = Intent(this, BoardActivity::class.java)
             intent.putExtra("Nombre1",name1)
             intent.putExtra("Nombre2",name2)
             startActivity(intent)
         }
     }
-
 
 }

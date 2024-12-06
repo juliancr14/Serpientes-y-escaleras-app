@@ -138,7 +138,7 @@ class BoardActivity : AppCompatActivity() {
         // Configurar el botón para tirar los dados
         val btn2: Button = findViewById(R.id.botonDado)
         btn2.setOnClickListener {
-            viewModel.tirarDados(this)
+            viewModel.tirarDados(this, TV1, TV2, textoGanador)
         }
     }
 }
