@@ -33,8 +33,8 @@ class GameViewModel : ViewModel() {
     init {
         _mapa.value = mutableListOf()
         _jugadores.value = mutableListOf(
-            Jugador(1, "Jugador 1", true, 1, 0, "X"),  // Asignar "X" al primer jugador
-            Jugador(2, "Jugador 2", false, 1, 0, "O") // Asignar "O" al segundo jugador
+            Jugador(1, "Jugador 1", true, 1, 0, "X"), // Jugador 1 con ficha "X"
+            Jugador(2, "Jugador 2", false, 1, 0, "O") // Jugador 2 con ficha "O"
         )
         actualizarTurno()
     }
@@ -134,46 +134,81 @@ class GameViewModel : ViewModel() {
         val jugadorActual = jugadores.firstOrNull { it.turno } ?: return
         val jugadorOponente = jugadores.firstOrNull { !it.turno } ?: return
 
-        val posAnterior = jugadorActual.Posicion
-        jugadorActual.Posicion += resultado + resultado2
-
-        // Verificar si el jugador ha excedido la meta
-        if (jugadorActual.Posicion > 64) {
-            showToast(context, "Lo siento, no fue suficiente para llegar a la meta!")
-            jugadorActual.Posicion = posAnterior
+        if (jugadorActual.contDado == 3) {
+            resetPosicionJugador(context, jugadorActual)
             return
         }
 
-        // Limpiar la casilla anterior
-        val casillaAnterior = mapa.firstOrNull { it?.Numero == posAnterior }
-        casillaAnterior?.lugar?.text = "${casillaAnterior?.Numero}.  " // Limpiar correctamente la casilla anterior
+        var posAnterior = jugadorActual.Posicion
+        jugadorActual.Posicion += resultado + resultado2
 
-        // Verificar la nueva casilla
-        val nuevaCasilla = mapa.firstOrNull { it?.Numero == jugadorActual.Posicion }
-        nuevaCasilla?.let { casilla ->
-            when (casilla.Tipo) {
-                TipoCasilla.ESCALERA -> jugadorActual.Posicion = casilla.destino
-                TipoCasilla.SERPIENTE -> jugadorActual.Posicion = casilla.destino
-                TipoCasilla.GANADOR -> {
-                    textoGanador.text = "${textoGanador.text}\n${jugadorActual.nombre}"
-                    _ganador.value = jugadorActual.nombre
-                    showToast(context, "¡Felicidades ${jugadorActual.nombre}, has ganado!")
-                    return
+        if (jugadorActual.Posicion > 64) {
+            showToast(context, "Lo siento, no fue suficiente para llegar a la meta!!")
+            jugadorActual.Posicion = posAnterior
+            mTTS.speak("No fue suficiente para llegar a la meta", TextToSpeech.QUEUE_FLUSH, null, null)
+        } else {
+            // Limpiar la casilla anterior
+            mapa.firstOrNull { it.Numero == posAnterior }?.let { casillaAnterior ->
+                casillaAnterior.lugar?.text = when {
+                    casillaAnterior.lugar?.text.toString() == "$posAnterior.${jugadorActual.simbolo}${jugadorOponente.simbolo}" ->
+                        "$posAnterior.${jugadorOponente.simbolo}" // Solo queda el oponente
+                    else -> "$posAnterior.  " // La casilla queda vacía
                 }
-                else -> Unit
+            }
+
+            // Obtener la casilla actual del jugador después del movimiento
+            var casillaActual = mapa.firstOrNull { it.Numero == jugadorActual.Posicion }
+
+            // Verificar si el jugador cayó en una serpiente o escalera
+            if (casillaActual?.Tipo == TipoCasilla.ESCALERA || casillaActual?.Tipo == TipoCasilla.SERPIENTE) {
+                val tipo = if (casillaActual.Tipo == TipoCasilla.ESCALERA) "escalera" else "serpiente"
+                val destino = casillaActual.destino
+                mTTS.speak(
+                    "¡Cuidado! Has caído en una $tipo. Ahora te mueves a la casilla $destino.",
+                    TextToSpeech.QUEUE_FLUSH,
+                    null,
+                    null
+                )
+                posAnterior = jugadorActual.Posicion // Guardar posición antes del cambio
+                jugadorActual.Posicion = casillaActual.destino
+                casillaActual = mapa.firstOrNull { it.Numero == jugadorActual.Posicion } // Actualizar a la nueva posición
+            }
+
+            // Actualizar casilla actual después del movimiento
+            casillaActual?.let { casilla ->
+                casilla.lugar?.text = when {
+                    casilla.Numero == jugadorActual.Posicion && casilla.Numero == jugadorOponente?.Posicion ->
+                        "${casilla.Numero}.${jugadorActual.simbolo}${jugadorOponente.simbolo}" // Ambos jugadores están en la casilla
+                    casilla.Numero == jugadorActual.Posicion ->
+                        "${casilla.Numero}.${jugadorActual.simbolo}" // Solo el jugador actual está en la casilla
+                    else -> "${casilla.Numero}.  " // La casilla queda vacía
+                }
+                mTTS.speak("Has llegado a la casilla ${casilla.Numero}.", TextToSpeech.QUEUE_FLUSH, null, null)
             }
         }
 
-        // Actualizar las casillas con el símbolo del jugador
-        actualizarCasilla(nuevaCasilla, jugadorActual, jugadorOponente)
+        // Verificar tipo de casilla final (ganadora)
+        val nuevaCasilla = mapa.firstOrNull { it?.Numero == jugadorActual.Posicion }
+        if (nuevaCasilla?.Tipo == TipoCasilla.GANADOR) {
+            textoGanador.text = "${textoGanador.text}\n${jugadorActual.nombre}"
+            showToast(context, "¡Felicidades ${jugadorActual.nombre}, has ganado!")
+            mTTS.speak("¡Felicidades ${jugadorActual.nombre}, has ganado!", TextToSpeech.QUEUE_FLUSH, null, null)
+            _ganador.value = jugadorActual.nombre
+            return
+        }
 
         // Cambio de turno
-        if ((resultado + resultado2) == 6) {
+        val suma = resultado + resultado2
+        if (suma == 6) {
             jugadorActual.turno = true
+            jugadorActual.contDado += 1
             showToast(context, "¡Sacaste un 6, tienes otro turno!")
+            mTTS.speak("Sacaste un 6, tienes otro turno.", TextToSpeech.QUEUE_FLUSH, null, null)
         } else {
             jugadorActual.turno = false
             jugadorOponente.turno = true
+            jugadorActual.contDado = 0
+            mTTS.speak("Cambio de turno. Ahora le toca a ${jugadorOponente.nombre}.", TextToSpeech.QUEUE_FLUSH, null, null)
         }
 
         _jugadores.value = jugadores
@@ -183,24 +218,17 @@ class GameViewModel : ViewModel() {
     private fun actualizarCasilla(casilla: Casilla?, jugadorActual: Jugador, jugadorOponente: Jugador?) {
         if (casilla == null) return // Verificar nulabilidad de `casilla`
 
-        // Actualizar las casillas con los símbolos de ambos jugadores
         casilla.lugar?.text = when {
-            // Si el jugador actual está en la casilla, se muestra su símbolo
-            casilla.Numero == jugadorActual.Posicion -> "${casilla.Numero}.${jugadorActual.simbolo}"
-
-            // Si el oponente está en la casilla, se muestra su símbolo
-            casilla.Numero == jugadorOponente?.Posicion -> "${casilla.Numero}.${jugadorOponente.simbolo}"
-
-            // Si la casilla está vacía, solo muestra el número de la casilla
-            else -> "${casilla.Numero}. "
+            casilla.Numero == jugadorActual.Posicion && casilla.Numero == jugadorOponente?.Posicion ->
+                "${casilla.Numero}.${jugadorActual.simbolo}${jugadorOponente.simbolo}" // Ambos jugadores comparten la casilla
+            casilla.Numero == jugadorActual.Posicion ->
+                "${casilla.Numero}.${jugadorActual.simbolo}" // Solo el jugador actual está en la casilla
+            casilla.Numero == jugadorOponente?.Posicion ->
+                "${casilla.Numero}.${jugadorOponente.simbolo}" // Solo el jugador oponente está en la casilla
+            else -> "${casilla.Numero}.  " // La casilla está vacía
         }
 
-        // Verifica si ambas casillas ocupadas por jugadores "X" y "O" están en la misma posición
-        if (casilla.Numero == jugadorActual.Posicion && casilla.Numero == jugadorOponente?.Posicion) {
-            casilla.lugar?.text = "${casilla.Numero}.XO"  // Mostrar "XO" si ambos jugadores están en la misma casilla
-        }
-
-        // Usar TextToSpeech para leer el número de la casilla si es necesario
+        // Texto hablado de la casilla para el jugador actual
         val textoParaLeer = "Casilla ${casilla.Numero}"
         mTTS.speak(textoParaLeer, TextToSpeech.QUEUE_FLUSH, null, null)
     }
