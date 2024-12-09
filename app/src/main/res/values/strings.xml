@@ -10,4 +10,6 @@
     <string name="dadodos">1</string>
     <string name="winners">Winners</string>
     <string name="delete">Delete</string>
+    <string name="local_game">Juego Local</string>
+    <string name="multiplayer">Multijugador</string>
 </resources>

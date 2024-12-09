@@ -7,49 +7,46 @@
     android:background="@drawable/mainbackground"
     tools:context=".view.HomeActivity">
 
-    <!-- Título de la pantalla -->
-    <TextView
-        android:id="@+id/tvHomeTitle"
+    <!-- Imagen del título -->
+    <ImageView
+        android:id="@+id/imgTitulo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Serpientes y Escaleras"
-        android:fontFamily="@font/moresugar"
-        android:textSize="32sp"
-        android:textStyle="bold"
-        android:textColor="@color/golden"
+        android:layout_marginTop="24dp"
+        android:contentDescription="@string/app_name"
+        app:srcCompat="@drawable/titulo"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="50dp" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Botón para Juego Local -->
+    <!-- Botón para juego local -->
     <Button
         android:id="@+id/btnLocalGame"
-        android:layout_width="200dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:backgroundTint="@color/peach"
-        android:fontFamily="@font/moresugar"
-        android:text="Juego Local"
-        android:textSize="20sp"
+        android:fontFamily="sans-serif-black"
+        android:text="@string/local_game"
         android:textColor="@color/white"
-        app:layout_constraintTop_toBottomOf="@+id/tvHomeTitle"
+        android:textSize="20sp"
+        app:layout_constraintTop_toBottomOf="@+id/imgTitulo"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="50dp" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Botón para Multijugador -->
+    <!-- Botón para multijugador -->
     <Button
         android:id="@+id/btnMultiplayer"
-        android:layout_width="200dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:backgroundTint="@color/peach"
-        android:fontFamily="@font/moresugar"
-        android:text="Multijugador"
-        android:textSize="20sp"
+        android:fontFamily="sans-serif-black"
+        android:text="@string/multiplayer"
         android:textColor="@color/white"
+        android:textSize="20sp"
         app:layout_constraintTop_toBottomOf="@+id/btnLocalGame"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="20dp" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
