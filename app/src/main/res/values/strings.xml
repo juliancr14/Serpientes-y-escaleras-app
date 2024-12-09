@@ -8,4 +8,6 @@
     <string name="txtSjugador">2 Jugador</string>
     <string name="dado">1</string>
     <string name="dadodos">1</string>
+    <string name="winners">Winners</string>
+    <string name="delete">Delete</string>
 </resources>
