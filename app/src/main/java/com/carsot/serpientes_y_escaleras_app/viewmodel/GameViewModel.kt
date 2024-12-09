@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import com.carsot.serpientes_y_escaleras_app.model.Casilla
 import com.carsot.serpientes_y_escaleras_app.model.Jugador
 import com.carsot.serpientes_y_escaleras_app.model.TipoCasilla
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlin.random.Random
 
 class GameViewModel : ViewModel() {
@@ -29,6 +30,9 @@ class GameViewModel : ViewModel() {
     val ganador: LiveData<String?> get() = _ganador
 
     private lateinit var mTTS: TextToSpeech
+
+    //Firestore DB
+    private val db = FirebaseFirestore.getInstance();
 
     init {
         _mapa.value = mutableListOf()
@@ -194,6 +198,12 @@ class GameViewModel : ViewModel() {
             showToast(context, "¡Felicidades ${jugadorActual.nombre}, has ganado!")
             mTTS.speak("¡Felicidades ${jugadorActual.nombre}, has ganado!", TextToSpeech.QUEUE_FLUSH, null, null)
             _ganador.value = jugadorActual.nombre
+
+            //Guardar nombre del ganador en la base de datos
+            db.collection("winners").document(jugadorActual.nombre).set(
+                hashMapOf("User" to jugadorActual.nombre)
+            )
+
             return
         }
 
