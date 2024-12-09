@@ -13,11 +13,11 @@
         android:theme="@style/Theme.Serpientesyescalerasapp"
         tools:targetApi="31">
         <activity
-            android:name=".view.WinnerActivity"
+            android:name=".view.MultiplayerActivity"
             android:exported="false" />
         <activity
-            android:name=".view.MainActivity"
-            android:exported="true">
+            android:name=".view.HomeActivity"
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,8 +25,14 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".view.WinnerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.MainActivity"
+            android:exported="true"/>
+        <activity
             android:name=".view.BoardActivity"
-            android:exported="false"></activity>
+            android:exported="false" />
     </application>
 
 </manifest>
