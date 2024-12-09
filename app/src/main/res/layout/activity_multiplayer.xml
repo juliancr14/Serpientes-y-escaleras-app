@@ -1,60 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/mainbackground">
+    android:layout_height="match_parent">
 
+    <!-- EditText para nombre de usuario -->
     <EditText
         android:id="@+id/etUsername"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Ingresa tu nombre de usuario"
-        android:fontFamily="@font/moresugar"
-        android:layout_margin="16dp"
-        android:textColor="@color/black"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
         android:background="@drawable/ingreso"
-        app:layout_constraintTop_toTopOf="parent"
+        android:hint="Nombre de usuario"
+        android:gravity="center"
+        android:fontFamily="@font/moresugar"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:inputType="text"
+        android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="30dp"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.5" />
 
+    <!-- EditText para código de partida -->
     <EditText
         android:id="@+id/etGameCode"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Ingresa código de partida"
-        android:fontFamily="@font/moresugar"
-        android:layout_margin="16dp"
-        android:textColor="@color/black"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
         android:background="@drawable/ingreso"
-        app:layout_constraintTop_toBottomOf="@id/etUsername"
+        android:hint="Código de partida"
+        android:gravity="center"
+        android:fontFamily="@font/moresugar"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:inputType="text"
+        android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/etUsername"
+        app:layout_constraintHorizontal_bias="0.5" />
 
+    <!-- Botón para unirse a la partida -->
     <Button
         android:id="@+id/btnJoinGame"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Unirse a partida"
-        android:fontFamily="@font/moresugar"
         android:backgroundTint="@color/peach"
+        android:fontFamily="@font/moresugar"
+        android:text="Unirse"
         android:textColor="@color/white"
-        android:textSize="18sp"
-        app:layout_constraintTop_toBottomOf="@+id/etGameCode"
+        android:textSize="16sp"
+        android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/etGameCode" />
 
     <Button
         android:id="@+id/btnCreateGame"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Crear nueva partida"
-        android:fontFamily="@font/moresugar"
+        android:text="Crear partida"
+        android:layout_marginTop="16dp"
         android:backgroundTint="@color/peach"
         android:textColor="@color/white"
-        android:textSize="18sp"
         app:layout_constraintTop_toBottomOf="@+id/btnJoinGame"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
