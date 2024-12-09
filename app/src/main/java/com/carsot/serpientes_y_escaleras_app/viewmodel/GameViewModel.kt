@@ -199,9 +199,14 @@ class GameViewModel : ViewModel() {
             mTTS.speak("¡Felicidades ${jugadorActual.nombre}, has ganado!", TextToSpeech.QUEUE_FLUSH, null, null)
             _ganador.value = jugadorActual.nombre
 
+            //Obtener fecha y hora de la victoria
+            val fechaActual = java.time.LocalDate.now()
+
             //Guardar nombre del ganador en la base de datos
             db.collection("winners").document(jugadorActual.nombre).set(
-                hashMapOf("User" to jugadorActual.nombre)
+                hashMapOf("User" to jugadorActual.nombre,
+                        "Date" to fechaActual.toString()
+                )
             )
 
             return
