@@ -25,6 +25,12 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra("Nombre2",name2)
             startActivity(intent)
         }
+
+        val btnInfo: Button = findViewById(R.id.btnInfo)
+        btnInfo.setOnClickListener {
+            val intent = Intent(this, WinnerActivity::class.java)
+            startActivity(intent)
+        }
     }
 
 }
