@@ -183,7 +183,7 @@ class GameViewModel : ViewModel() {
                         "${casilla.Numero}.${jugadorActual.simbolo}" // Solo el jugador actual está en la casilla
                     else -> "${casilla.Numero}.  " // La casilla queda vacía
                 }
-                mTTS.speak("Has llegado a la casilla ${casilla.Numero}.", TextToSpeech.QUEUE_FLUSH, null, null)
+                mTTS.speak("Casilla ${casilla.Numero}.", TextToSpeech.QUEUE_FLUSH, null, null)
             }
         }
 
@@ -208,7 +208,6 @@ class GameViewModel : ViewModel() {
             jugadorActual.turno = false
             jugadorOponente.turno = true
             jugadorActual.contDado = 0
-            mTTS.speak("Cambio de turno. Ahora le toca a ${jugadorOponente.nombre}.", TextToSpeech.QUEUE_FLUSH, null, null)
         }
 
         _jugadores.value = jugadores
@@ -216,7 +215,7 @@ class GameViewModel : ViewModel() {
     }
 
     private fun actualizarCasilla(casilla: Casilla?, jugadorActual: Jugador, jugadorOponente: Jugador?) {
-        if (casilla == null) return // Verificar nulabilidad de `casilla`
+        if (casilla == null) return
 
         casilla.lugar?.text = when {
             casilla.Numero == jugadorActual.Posicion && casilla.Numero == jugadorOponente?.Posicion ->
